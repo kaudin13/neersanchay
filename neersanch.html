@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NeerSanchay – Rooftop Rainwater Harvesting Assessment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    /* Subtle animated gradient for the hero */
+    .gradient-bg {
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(56,189,248,0.15), transparent 60%),
+                  radial-gradient(1000px 500px at 90% 20%, rgba(16,185,129,0.12), transparent 60%),
+                  linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+    }
+    /* Decorative animated raindrops */
+    .rain {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: .25;
+    }
+    .drop {
+      position: absolute; width: 2px; height: 14px; background: linear-gradient(to bottom, rgba(59,130,246,.0), rgba(59,130,246,1));
+      border-radius: 9999px; animation: fall 2.4s linear infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-120%); opacity: 0; }
+      10% {opacity: .9;}
+      100% { transform: translateY(120%); opacity: 0; }
+    }
+    /* Card shadow polish */
+    .card {
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,.35), inset 0 1px 0 0 rgba(255,255,255,.02);
+    }
+    /* Smooth page transitions */
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn .35s ease-out; }
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(4px);} to {opacity: 1; transform: translateY(0);} }
+    /* Print-friendly styling */
+    @media print {
+      nav, .no-print { display: none !important; }
+      body { background: #fff !important; }
+      .page { display: block !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-40 backdrop-blur border-b border-white/10 bg-slate-900/70">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="#home" class="flex items-center gap-2 group">
+          <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-cyan-500/20 ring-1 ring-inset ring-cyan-400/30">
+            <!-- Water drop icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-cyan-300">
+              <path d="M12 2s7 8 7 13a7 7 0 1 1-14 0C5 10 12 2 12 2Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <div>
+            <p class="text-lg font-extrabold tracking-tight leading-none">NeerSanchay</p>
+            <p class="text-[11px] text-slate-400 -mt-0.5">Rooftop RWH Assessment</p>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center gap-2">
+          <a href="#home" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Home</a>
+          <a href="#assessment" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Assessment</a>
+          <a href="#results" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Results</a>
+          <a href="#report" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Report</a>
+          <a href="#about" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">About</a>
+        </div>
+        <div class="md:hidden">
+          <button id="mobileMenuBtn" class="no-print inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200">
+            <span>Menu</span>
+            <svg class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t border-white/10">
+      <div class="px-4 py-2 flex flex-col">
+        <a href="#home" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Home</a>
+        <a href="#assessment" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Assessment</a>
+        <a href="#results" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Results</a>
+        <a href="#report" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">Report</a>
+        <a href="#about" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Pages -->
+  <main class="relative">
+    <!-- HOME -->
+    <section id="home" class="page active relative gradient-bg">
+      <div class="rain" aria-hidden="true" id="rain"></div>
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="min-h-[76vh] md:min-h-[70vh] flex flex-col md:flex-row items-center justify-center gap-10 py-12">
+          <div class="w-full md:w-1/2">
+            <div class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-emerald-500/10 ring-1 ring-inset ring-emerald-400/20 text-emerald-300 text-xs font-semibold mb-5">
+              <span>New</span>
+              <span class="text-emerald-200/70">Instant rooftop assessment</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+              NeerSanchay
+            </h1>
+            <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-xl">
+              “Estimate rooftop rainwater harvesting & recharge potential instantly.”
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <a href="#assessment" class="inline-flex justify-center items-center gap-2 px-5 py-3 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-300">
+                Start Assessment
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7M20 12H4"/></svg>
+              </a>
+              <a href="#about" class="inline-flex justify-center items-center gap-2 px-5 py-3 rounded-xl bg-white/5 text-white font-semibold hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20">
+                Learn More
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20h0M12 4v10"/></svg>
+              </a>
+            </div>
+            <div class="mt-8 grid grid-cols-2 gap-4 text-sm text-slate-300">
+              <div class="flex items-center gap-2">
+                <span class="text-cyan-300">💧</span>
+                <span>Annual harvest estimate</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-300">🌱</span>
+                <span>Sustainability score</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-yellow-300">🛢</span>
+                <span>Suggested tank size</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-pink-300">💰</span>
+                <span>Cost estimate</span>
+              </div>
+            </div>
+          </div>
+          <div class="w-full md:w-1/2">
+            <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6">
+              <h3 class="text-lg font-semibold mb-2">How it works</h3>
+              <ol class="space-y-3 text-slate-300">
+                <li class="flex gap-3">
+                  <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cyan-500/20 ring-1 ring-cyan-400/30 text-cyan-300 font-bold">1</span>
+                  Enter location, roof area, rainfall, and more
+                </li>
+                <li class="flex gap-3">
+                  <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 ring-1 ring-emerald-400/30 text-emerald-300 font-bold">2</span>
+                  We estimate harvest, tank size, and recharge structure
+                </li>
+                <li class="flex gap-3">
+                  <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-yellow-500/20 ring-1 ring-yellow-400/30 text-yellow-300 font-bold">3</span>
+                  Download your report and next steps
+                </li>
+              </ol>
+              <a href="#assessment" class="mt-6 inline-flex justify-center items-center gap-2 w-full px-5 py-3 rounded-xl bg-white text-slate-900 font-semibold hover:bg-slate-100">
+                Start Now
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ASSESSMENT -->
+    <section id="assessment" class="page">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        <header class="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
+          <div>
+            <h2 class="text-3xl font-extrabold">Assessment Form</h2>
+            <p class="text-slate-300 mt-1">Provide basic details to estimate your rainwater harvesting potential.</p>
+          </div>
+          <a href="#home" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10">
+            ← Back to Home
+          </a>
+        </header>
+
+        <form id="assessmentForm" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 card bg-slate-800/50 ring-1 ring-white/10 rounded-2xl p-6">
+          <!-- Location -->
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-medium mb-2">Location</label>
+            <div class="flex gap-2">
+              <input type="text" id="location" placeholder="City, Area or Coordinates" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+              <button type="button" id="gpsBtn" class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400">
+                Use GPS
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8a4 4 0 100 8 4 4 0 000-8zm0-6a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm0 18a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1zM3 11a1 1 0 011-1h2a1 1 0 110 2H4a1 1 0 01-1-1zm16 0a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"/></svg>
+              </button>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">GPS uses your browser’s location if allowed.</p>
+          </div>
+
+          <!-- Rooftop area -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Rooftop area (sq.m.)</label>
+            <input type="number" id="rooftop_area" min="10" step="0.1" placeholder="e.g., 120" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+          </div>
+
+          <!-- Roof material -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Roof material</label>
+            <select id="roof_material" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+              <option value="">Select material</option>
+              <option>RCC</option>
+              <option>Tiles</option>
+              <option>Metal Sheet</option>
+            </select>
+          </div>
+
+          <!-- Rainfall -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Rainfall (mm/year)</label>
+            <input type="number" id="rainfall" min="100" step="1" placeholder="e.g., 800" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+          </div>
+
+          <!-- Soil type -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Soil type</label>
+            <select id="soil_type" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+              <option value="">Select soil</option>
+              <option>Clay</option>
+              <option>Sandy</option>
+              <option>Loamy</option>
+            </select>
+          </div>
+
+          <!-- Household demand -->
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-medium mb-2">Household demand (people or L/day)</label>
+            <input type="number" id="household_demand" min="1" step="1" placeholder="e.g., 4 (people) or 500 (L/day)" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+            <p class="text-xs text-slate-400 mt-1">We accept a number. If it's small (like 3–12), we'll treat it as people; if larger (like 200–1000), as L/day.</p>
+          </div>
+
+          <div class="col-span-1 md:col-span-2 flex items-center gap-3">
+            <button id="submitBtn" type="submit" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 text-slate-900 font-semibold hover:bg-emerald-400">
+              Calculate Potential
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7M20 12H4"/></svg>
+            </button>
+            <span id="formStatus" class="text-sm text-slate-400"></span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results" class="page">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <h2 class="text-3xl font-extrabold">Results Dashboard</h2>
+            <p class="text-slate-300 mt-1">Based on your inputs and our mock analysis.</p>
+          </div>
+          <div class="flex gap-2">
+            <a href="#assessment" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10">Edit Inputs</a>
+            <a href="#report" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400">Go to Report</a>
+          </div>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mt-8">
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-400">💧 Annual Harvest</span>
+            </div>
+            <p id="annualHarvest" class="mt-3 text-3xl font-extrabold tracking-tight">—</p>
+            <p class="text-xs text-slate-400 mt-1">Estimated litres per year</p>
+          </div>
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-5">
+            <span class="text-sm text-slate-400">🛢 Suggested Tank</span>
+            <p id="tankSize" class="mt-3 text-2xl font-bold">—</p>
+            <p class="text-xs text-slate-400 mt-1">Optimal storage size</p>
+          </div>
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-5">
+            <span class="text-sm text-slate-400">🕳 Recharge Structure</span>
+            <p id="rechargeStructure" class="mt-3 text-xl font-semibold">—</p>
+            <p class="text-xs text-slate-400 mt-1">Pit / trench / well</p>
+          </div>
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-5">
+            <span class="text-sm text-slate-400">💰 Cost Estimate</span>
+            <p id="costEstimate" class="mt-3 text-2xl font-bold">—</p>
+            <p class="text-xs text-slate-400 mt-1">Approximate setup cost</p>
+          </div>
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-400">🌱 Sustainability</span>
+              <span id="sustainabilityDot" class="h-2.5 w-2.5 rounded-full bg-slate-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-slate-500"></span>
+            </div>
+            <p id="sustainabilityScore" class="mt-3 text-2xl font-extrabold">—</p>
+            <p class="text-xs text-slate-400 mt-1">Traffic light grading</p>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6 mt-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">Monthly Water Availability</h3>
+            <button id="toggleChartType" class="no-print inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm">
+              Toggle Bar/Line
+            </button>
+          </div>
+          <p class="text-slate-400 text-sm mt-1">Derived from annual estimate and rainfall distribution.</p>
+          <div class="mt-4">
+            <canvas id="availabilityChart" height="110"></canvas>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6">
+            <h4 class="font-semibold mb-2">Assumptions</h4>
+            <ul id="assumptionsList" class="text-sm text-slate-300 space-y-1">
+              <li>—</li>
+            </ul>
+          </div>
+          <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6 lg:col-span-2">
+            <h4 class="font-semibold mb-2">Tips to Improve</h4>
+            <ul class="text-sm text-slate-300 list-disc pl-5 space-y-1">
+              <li>Keep gutters and downpipes clean to improve capture efficiency.</li>
+              <li>Use a first-flush diverter to maintain water quality.</li>
+              <li>Choose recharge structures suitable for your soil type.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORT -->
+    <section id="report" class="page">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <h2 class="text-3xl font-extrabold">Report</h2>
+            <p class="text-slate-300 mt-1">Your summary and actionable next steps.</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="downloadPDF" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-slate-900 font-semibold hover:bg-emerald-400">
+              Download Report (PDF)
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>
+            </button>
+            <a href="#results" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10">Back to Results</a>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6 mt-6">
+          <h3 class="text-xl font-semibold mb-4">Summary</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-white/10">
+              <p class="text-sm text-slate-400">💧 Annual Harvest</p>
+              <p id="r_annual" class="text-2xl font-extrabold mt-1">—</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-white/10">
+              <p class="text-sm text-slate-400">🛢 Suggested Tank</p>
+              <p id="r_tank" class="text-2xl font-bold mt-1">—</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-white/10">
+              <p class="text-sm text-slate-400">🕳 Recharge Structure</p>
+              <p id="r_recharge" class="text-xl font-semibold mt-1">—</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-white/10">
+              <p class="text-sm text-slate-400">💰 Cost Estimate</p>
+              <p id="r_cost" class="text-2xl font-bold mt-1">—</p>
+            </div>
+          </div>
+          <div class="mt-6">
+            <p class="text-sm text-slate-400">🌱 Sustainability</p>
+            <div class="flex items-center gap-3 mt-1">
+              <span id="r_susDot" class="h-2.5 w-2.5 rounded-full bg-slate-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-slate-500"></span>
+              <p id="r_score" class="text-xl font-extrabold">—</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6 mt-6">
+          <h3 class="text-xl font-semibold">Next Steps</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
+            <div class="p-4 rounded-xl bg-white/5">
+              <p class="font-semibold">Suggested Structure</p>
+              <p id="next_structure" class="text-slate-300 mt-1">—</p>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5">
+              <p class="font-semibold">Cost Range</p>
+              <p id="next_cost" class="text-slate-300 mt-1">—</p>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5">
+              <p class="font-semibold">Water Savings</p>
+              <p id="next_savings" class="text-slate-300 mt-1">—</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400 mt-4">Tip: Consult a local expert to finalize dimensions based on on-site conditions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="page">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        <div class="card rounded-2xl bg-slate-800/50 ring-1 ring-white/10 p-6">
+          <h2 class="text-3xl font-extrabold">About NeerSanchay</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div class="p-5 rounded-xl bg-white/5">
+              <p class="text-2xl">🚰</p>
+              <h3 class="font-semibold mt-2">The Problem</h3>
+              <p class="text-slate-300 mt-1">Groundwater depletion and erratic rainfall stress our cities. Rooftops are underused catchments.</p>
+            </div>
+            <div class="p-5 rounded-xl bg-white/5">
+              <p class="text-2xl">💡</p>
+              <h3 class="font-semibold mt-2">Our Solution</h3>
+              <p class="text-slate-300 mt-1">Estimate harvestable water, suggest storage and recharge structures, and guide next steps instantly.</p>
+            </div>
+            <div class="p-5 rounded-xl bg-white/5">
+              <p class="text-2xl">🌿</p>
+              <h3 class="font-semibold mt-2">Benefits</h3>
+              <ul class="text-slate-300 mt-1 list-disc pl-5 space-y-1">
+                <li>Water savings and reliability</li>
+                <li>Groundwater recharge</li>
+                <li>Better sustainability outcomes</li>
+              </ul>
+            </div>
+          </div>
+          <a href="#assessment" class="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400">
+            Start Assessment
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-10 py-8 border-t border-white/10 bg-slate-900/60">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-slate-400">
+      <p>© <span id="year"></span> NeerSanchay</p>
+      <p>Prototype for assessment and planning. Data shown uses a demo backend.</p>
+    </div>
+  </footer>
+
+  <script>
+    // State
+    const state = {
+      inputs: null,
+      results: null,
+      chart: null,
+      chartType: 'bar'
+    };
+
+    // Utility
+    const $ = (sel) => document.querySelector(sel);
+    const showPage = (id) => {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const el = document.getElementById(id) || document.getElementById('home');
+      el.classList.add('active');
+      // Build chart when entering results
+      if (id === 'results') buildOrUpdateChart();
+    };
+    const navigate = () => {
+      const hash = (location.hash || '#home').replace('#','');
+      showPage(hash);
+      setActiveNav(hash);
+    };
+    const setActiveNav = (hash) => {
+      document.querySelectorAll('.nav-link').forEach(a => {
+        const isActive = a.getAttribute('href') === '#'+hash;
+        a.classList.toggle('bg-white/10', isActive);
+        a.classList.toggle('text-white', isActive);
+      });
+      $('#mobileMenu').classList.add('hidden');
+    };
+
+    // Decorative rain
+    const spawnRain = () => {
+      const container = $('#rain');
+      if (!container) return;
+      const drops = 40;
+      for (let i=0; i<drops; i++) {
+        const d = document.createElement('span');
+        d.className = 'drop';
+        const left = Math.random() * 100;
+        const delay = Math.random() * 2;
+        const duration = 1.8 + Math.random() * 1.8;
+        const height = 10 + Math.random() * 18;
+        d.style.left = left + '%';
+        d.style.animationDelay = delay + 's';
+        d.style.animationDuration = duration + 's';
+        d.style.height = height + 'px';
+        container.appendChild(d);
+      }
+    };
+
+    // Mock Backend: simulate API call returning sample JSON
+    function mockFetchResults(payload) {
+      // Produce the exact sample, but tweak annual harvest based on inputs so it feels responsive
+      const base = 40000;
+      const area = Number(payload.rooftop_area || 100);
+      const rain = Number(payload.rainfall || 800);
+      // Simple estimate: area(m2) * rain(mm) * 0.8 (efficiency)
+      const est = Math.round(area * rain * 0.8); // litres approx (1 mm on 1 m2 ~ 1 L)
+      const annual_harvest = Math.max(15000, Math.min(120000, est));
+
+      // Suggest tank size roughly 10–20% of annual harvest / 12
+      const monthly = Math.round(annual_harvest / 12);
+      const tankLitres = Math.round(monthly * 0.6 / 500) * 500 || 5000;
+      const suggested_tank = (tankLitres || 5000).toLocaleString() + ' L';
+
+      const recharge_structure = (() => {
+        const soil = String(payload.soil_type || '').toLowerCase();
+        if (soil.includes('sandy')) return 'Recharge Trench (0.6×0.6×5 m)';
+        if (soil.includes('clay')) return 'Recharge Pit (2×2×2 m) with filter media';
+        return 'Recharge Well (1 m dia × 6 m)';
+      })();
+
+      const cost_estimate = '₹' + (Math.round((tankLitres * 1.8 + 8000) / 500) * 500).toLocaleString();
+      const sustainability_score = annual_harvest > 60000 ? 'Green' : (annual_harvest > 30000 ? 'Amber' : 'Red');
+
+      const result = {
+        annual_harvest,
+        suggested_tank,
+        recharge_structure,
+        cost_estimate,
+        sustainability_score
+      };
+
+      return new Promise((resolve)=>setTimeout(()=>resolve(result), 900));
+    }
+
+    // Form Handling
+    const form = $('#assessmentForm');
+    const statusEl = $('#formStatus');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Calculating...';
+      $('#submitBtn').disabled = true;
+
+      const inputs = {
+        location: $('#location').value.trim(),
+        rooftop_area: Number($('#rooftop_area').value),
+        roof_material: $('#roof_material').value,
+        rainfall: Number($('#rainfall').value),
+        soil_type: $('#soil_type').value,
+        household_demand: Number($('#household_demand').value)
+      };
+      state.inputs = inputs;
+
+      try {
+        const results = await mockFetchResults(inputs);
+        state.results = results;
+        statusEl.textContent = 'Done! Redirecting to results...';
+        renderResults();
+        location.hash = '#results';
+        setTimeout(()=> statusEl.textContent = '', 1200);
+      } catch (err) {
+        statusEl.textContent = 'Something went wrong. Please try again.';
+      } finally {
+        $('#submitBtn').disabled = false;
+      }
+    });
+
+    // GPS button
+    $('#gpsBtn')?.addEventListener('click', ()=> {
+      if (!navigator.geolocation) {
+        alert('Geolocation not supported by your browser.');
+        return;
+      }
+      $('#gpsBtn').textContent = 'Locating...';
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const { latitude, longitude } = pos.coords;
+          $('#location').value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+          $('#gpsBtn').textContent = 'Use GPS';
+        },
+        err => {
+          alert('Could not get location.');
+          $('#gpsBtn').textContent = 'Use GPS';
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    });
+
+    // Results rendering
+    function renderResults() {
+      const r = state.results || {
+        annual_harvest: 40000,
+        suggested_tank: "5000 L",
+        recharge_structure: "Pit (2x2x2 m)",
+        cost_estimate: "₹15,000",
+        sustainability_score: "Green"
+      };
+
+      // Cards
+      $('#annualHarvest').textContent = (r.annual_harvest || 0).toLocaleString() + ' L';
+      $('#tankSize').textContent = r.suggested_tank;
+      $('#rechargeStructure').textContent = r.recharge_structure;
+      $('#costEstimate').textContent = r.cost_estimate;
+      $('#sustainabilityScore').textContent = r.sustainability_score;
+
+      // Traffic light
+      const dot = $('#sustainabilityDot');
+      dot.className = 'h-2.5 w-2.5 rounded-full ring-2 ring-offset-2 ring-offset-slate-800';
+      if (r.sustainability_score === 'Green') {
+        dot.classList.add('bg-emerald-400','ring-emerald-400');
+      } else if (r.sustainability_score === 'Amber') {
+        dot.classList.add('bg-amber-400','ring-amber-400');
+      } else {
+        dot.classList.add('bg-rose-400','ring-rose-400');
+      }
+
+      // Assumptions list
+      const list = $('#assumptionsList');
+      const inputs = state.inputs || {};
+      const demandPeople = inputs.household_demand <= 12 ? inputs.household_demand : null;
+      const demandLitres = inputs.household_demand > 12 ? inputs.household_demand : Math.round((inputs.household_demand || 0) * 135);
+      list.innerHTML = `
+        <li>Location: ${inputs.location || 'Unknown'}</li>
+        <li>Roof area: ${inputs.rooftop_area || '—'} m², Material: ${inputs.roof_material || '—'}</li>
+        <li>Rainfall: ${inputs.rainfall || '—'} mm/year; Soil: ${inputs.soil_type || '—'}</li>
+        <li>Demand: ${demandPeople ? demandPeople + ' people (~' + (demandPeople*135) + ' L/day)' : (demandLitres ? demandLitres + ' L/day' : '—')}</li>
+        <li>Capture efficiency assumed at ~80%</li>
+      `;
+
+      // Report mirror
+      $('#r_annual').textContent = (r.annual_harvest || 0).toLocaleString() + ' L';
+      $('#r_tank').textContent = r.suggested_tank;
+      $('#r_recharge').textContent = r.recharge_structure;
+      $('#r_cost').textContent = r.cost_estimate;
+      const rdot = $('#r_susDot');
+      rdot.className = 'h-2.5 w-2.5 rounded-full ring-2 ring-offset-2 ring-offset-slate-800';
+      if (r.sustainability_score === 'Green') {
+        rdot.classList.add('bg-emerald-400','ring-emerald-400');
+      } else if (r.sustainability_score === 'Amber') {
+        rdot.classList.add('bg-amber-400','ring-amber-400');
+      } else {
+        rdot.classList.add('bg-rose-400','ring-rose-400');
+      }
+      $('#r_score').textContent = r.sustainability_score;
+
+      // Next steps
+      $('#next_structure').textContent = r.recharge_structure;
+      $('#next_cost').textContent = r.cost_estimate + ' (approx)';
+      const monthlyL = Math.round((r.annual_harvest || 0) / 12);
+      $('#next_savings').textContent = monthlyL.toLocaleString() + ' L/month potential';
+
+      // Chart update
+      buildOrUpdateChart();
+    }
+
+    // Chart build/update
+    function buildOrUpdateChart() {
+      const ctx = document.getElementById('availabilityChart');
+      if (!ctx) return;
+
+      const annual = state.results?.annual_harvest ?? 40000;
+      // Skewed seasonal distribution (sum ~1)
+      const weights = [0.03,0.04,0.05,0.08,0.12,0.18,0.2,0.14,0.08,0.04,0.03,0.01];
+      const monthly = weights.map(w => Math.round(annual * w));
+      const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      const common = {
+        type: state.chartType,
+        data: {
+          labels,
+          datasets: [{
+            label: 'Available (L)',
+            data: monthly,
+            borderColor: 'rgb(34,197,94)',
+            backgroundColor: 'rgba(34,197,94,0.25)',
+            tension: 0.35,
+            borderWidth: 2,
+            hoverBackgroundColor: 'rgba(34,197,94,0.35)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { color: 'rgba(148,163,184,0.12)' }, ticks: { color: '#cbd5e1' } },
+            y: { grid: { color: 'rgba(148,163,184,0.12)' }, ticks: { color: '#cbd5e1' } }
+          },
+          plugins: {
+            legend: { labels: { color: '#e2e8f0' } },
+            tooltip: { callbacks: {
+              label: (ctx) => ctx.parsed.y.toLocaleString() + ' L'
+            } }
+          }
+        }
+      };
+
+      if (state.chart) {
+        // Update existing chart
+        state.chart.config.type = state.chartType;
+        state.chart.data.labels = labels;
+        state.chart.data.datasets[0].data = monthly;
+        state.chart.update();
+      } else {
+        // Create new chart
+        state.chart = new Chart(ctx, common);
+      }
+    }
+
+    // Toggle chart type
+    $('#toggleChartType')?.addEventListener('click', () => {
+      state.chartType = state.chartType === 'bar' ? 'line' : 'bar';
+      buildOrUpdateChart();
+    });
+
+    // Report download (prints to PDF)
+    $('#downloadPDF')?.addEventListener('click', () => {
+      // Switch to report page if not already
+      if (!document.getElementById('report').classList.contains('active')) {
+        location.hash = '#report';
+        setTimeout(() => window.print(), 200);
+      } else {
+        window.print();
+      }
+    });
+
+    // Mobile menu
+    $('#mobileMenuBtn')?.addEventListener('click', () => {
+      $('#mobileMenu').classList.toggle('hidden');
+    });
+
+    // Routing
+    window.addEventListener('hashchange', navigate);
+    window.addEventListener('load', () => {
+      navigate();
+      spawnRain();
+      document.getElementById('year').textContent = new Date().getFullYear();
+      // If arriving at results without running form, show default mock
+      if (location.hash === '#results' && !state.results) {
+        state.results = {
+          annual_harvest: 40000,
+          suggested_tank: "5000 L",
+          recharge_structure: "Pit (2x2x2 m)",
+          cost_estimate: "₹15,000",
+          sustainability_score: "Green"
+        };
+        state.inputs = {
+          location: 'Demo City',
+          rooftop_area: 100,
+          roof_material: 'RCC',
+          rainfall: 800,
+          soil_type: 'Loamy',
+          household_demand: 4
+        };
+        renderResults();
+      }
+    });
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9812cd88f059ff67',t:'MTc1ODIxOTA1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
